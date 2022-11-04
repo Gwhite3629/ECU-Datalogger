@@ -5,7 +5,7 @@
 
 struct sensor {
     char ID[20];
-    int hash;
+    unsigned long hash;
     int PID;
     bool time;
     int width;
@@ -14,7 +14,7 @@ struct sensor {
 
 struct sensor support_01 = {
     "SUPPORT1",             // USER-ID
-    0,                      // Hash-value
+    1687326579,             // Hash-value
     0x00,                   // PID
     0,                      // USER-TIME
     4,                      // Data Bytes
@@ -22,7 +22,7 @@ struct sensor support_01 = {
 };
 struct sensor engine_load = {
     "ENGINELOAD",           // USER-ID
-    0,                      // Hash-value
+    4279028283,             // Hash-value
     0x04,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -30,7 +30,7 @@ struct sensor engine_load = {
 };
 struct sensor engine_coolant_temp = {
     "ENGINECOOLTEMP",       // USER-ID
-    0,                      // Hash-value
+    3282382910,             // Hash-value
     0x05,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -38,7 +38,7 @@ struct sensor engine_coolant_temp = {
 };
 struct sensor short_fuel_trim_1 = {
     "SHORTFUEL1",           // USER-ID
-    0,                      // Hash-value
+    2712055890,             // Hash-value
     0x06,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -46,7 +46,7 @@ struct sensor short_fuel_trim_1 = {
 };
 struct sensor long_fuel_trim_1 = {
     "LONGFUEL1",            // USER-ID
-    0,                      // Hash-value
+    2388528850,             // Hash-value
     0x07,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -54,7 +54,7 @@ struct sensor long_fuel_trim_1 = {
 };
 struct sensor short_fuel_trim_2 = {
     "SHORTFUEL2",           // USER-ID
-    0,                      // Hash-value
+    2712055891,             // Hash-value
     0x08,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -62,7 +62,7 @@ struct sensor short_fuel_trim_2 = {
 };
 struct sensor long_fuel_trim_2 = {
     "LONGFUEL2",            // USER-ID
-    0,                      // Hash-value
+    2388528851,             // Hash-value
     0x09,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -70,7 +70,7 @@ struct sensor long_fuel_trim_2 = {
 };
 struct sensor fuel_pressure = {
     "FUELPRESSURE",         // USER-ID
-    0,                      // Hash-value
+    3531341578,             // Hash-value
     0x0A,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -78,7 +78,7 @@ struct sensor fuel_pressure = {
 };
 struct sensor manifold_pressure = {
     "MANIFOLDPRESSURE",     // USER-ID
-    0,                      // Hash-value
+    1621717352,             // Hash-value
     0x0B,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -86,7 +86,7 @@ struct sensor manifold_pressure = {
 };
 struct sensor engine_speed = {
     "ENGINESPEED",          // USER-ID
-    0,                      // Hash-value
+    3777321708,             // Hash-value
     0x0C,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
@@ -94,7 +94,7 @@ struct sensor engine_speed = {
 };
 struct sensor vehicle_speed = {
     "VEHICLESPEED",         // USER-ID
-    0,                      // Hash-value
+    1834597014,             // Hash-value
     0x0D,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -102,7 +102,7 @@ struct sensor vehicle_speed = {
 };
 struct sensor timing_advance = {
     "TIMINGADVANCE",        // USER-ID
-    0,                      // Hash-value
+    3859013695,             // Hash-value
     0x0E,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -110,7 +110,7 @@ struct sensor timing_advance = {
 };
 struct sensor intake_pressure = {
     "INTAKEPRESSURE",       // USER-ID
-    0,                      // Hash-value
+    3312306810,             // Hash-value
     0x0F,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -118,7 +118,7 @@ struct sensor intake_pressure = {
 };
 struct sensor mass_airflow = {
     "MASSAIRFLOW",          // USER-ID
-    0,                      // Hash-value
+    2826001069,             // Hash-value
     0x10,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
@@ -126,7 +126,7 @@ struct sensor mass_airflow = {
 };
 struct sensor throttle = {
     "THROTTLE",             // USER-ID
-    0,                      // Hash-value
+    1824148667,             // Hash-value
     0x11,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -134,7 +134,7 @@ struct sensor throttle = {
 };
 struct sensor oxygen_supp = {
     "OXSUPPORT",            // USER-ID
-    0,                      // Hash-value
+    3697387753,             // Hash-value
     0x13,                   // PID
     0,                      // USER-TIME
     1,                      // Data Bytes
@@ -142,63 +142,63 @@ struct sensor oxygen_supp = {
 };
 struct sensor oxygen_1 = {
     "OXYGEN1",              // USER-ID
-    0,                      // Hash-value
+    2561734608,             // Hash-value
     0x14,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
     0.0                     // USER-POLL
 };
 struct sensor oxygen_2 = {
-    "OXYGEN1",              // USER-ID
-    0,                      // Hash-value
+    "OXYGEN2",              // USER-ID
+    2561734609,             // Hash-value
     0x15,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
     0.0                     // USER-POLL
 };
 struct sensor oxygen_3 = {
-    "OXYGEN2",              // USER-ID
-    0,                      // Hash-value
+    "OXYGEN3",              // USER-ID
+    2561734610,             // Hash-value
     0x16,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
     0.0                     // USER-POLL
 };
 struct sensor oxygen_4 = {
-    "OXYGEN3",              // USER-ID
-    0,                      // Hash-value
+    "OXYGEN4",              // USER-ID
+    2561734611,             // Hash-value
     0x17,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
     0.0                     // USER-POLL
 };
 struct sensor oxygen_5 = {
-    "OXYGEN4",              // USER-ID
-    0,                      // Hash-value
+    "OXYGEN5",              // USER-ID
+    2561734612,             // Hash-value
     0x18,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
     0.0                     // USER-POLL
 };
 struct sensor oxygen_6 = {
-    "OXYGEN5",              // USER-ID
-    0,                      // Hash-value
+    "OXYGEN6",              // USER-ID
+    2561734613,             // Hash-value
     0x19,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
     0.0                     // USER-POLL
 };
 struct sensor oxygen_7 = {
-    "OXYGEN6",              // USER-ID
-    0,                      // Hash-value
+    "OXYGEN7",              // USER-ID
+    2561734614,             // Hash-value
     0x1A,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
     0.0                     // USER-POLL
 };
 struct sensor oxygen_8 = {
-    "OXYGEN7",              // USER-ID
-    0,                      // Hash-value
+    "OXYGEN8",              // USER-ID
+    2561734615,             // Hash-value
     0x1B,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
@@ -206,7 +206,7 @@ struct sensor oxygen_8 = {
 };
 struct sensor run_time = {
     "RUNTIME",              // USER-ID
-    0,                      // Hash-value
+    2011191433,             // Hash-value
     0x1F,                   // PID
     0,                      // USER-TIME
     2,                      // Data Bytes
