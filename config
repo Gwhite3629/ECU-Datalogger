@@ -13,13 +13,13 @@
 
 DEFAULT
 {
-    <SENSOR_ID>: VEHICLESPEED
-    <TIME>: Y
-    <POLL>: 100
-}
-{
     <SENSOR_ID>: ENGINESPEED
     <TIME>: Y
     <POLL>: 10
+}
+{
+    <SENSOR_ID>: VEHICLESPEED
+    <TIME>: Y
+    <POLL>: 100
 }
 DEFAULT
