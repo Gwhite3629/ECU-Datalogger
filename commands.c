@@ -13,6 +13,8 @@ void *input(void *arg)
 {
     int ret = SUCCESS;
     char t = 'N';
+    float tf = 0.0;
+    char ts[80];
     struct sensor temp;
     struct environment **env = (struct environment **)arg;
 
@@ -51,34 +53,36 @@ void *input(void *arg)
             } else if (spaces != 2) {
                 printf("Check arguments\n");
             } else {
-                // Add an element to the table
-                MEM_((*(*env)->user_table), (*env)->size + 1, struct sensor);
-                printf("INPUT: |%s|\n", user);
-                // Set the value of the ID, time, and poll
-                sscanf(user, "%s %c %f", \
-                (*env)->user_table[(*env)->size]->ID, \
-                &t, \
-                &((*env)->user_table[(*env)->size]->poll));
-                if (t == 'Y') {
-                    (*env)->user_table[(*env)->size]->time = 1;
+                sscanf(user, "%s %c %f", ts, &t, &tf);
+                temp = table_lookup(ts,(*(*env)->user_table), (*env)->size);
+                if (temp.hash == 0)
+                {
+                    // Add an element to the table
+                    MEM_((*(*env)->user_table), (*env)->size + 1, struct sensor);
+                    // Set the value of the ID, time, and poll
+                    strcpy((*(*env)->user_table)[(*env)->size].ID,ts);
+                    if (t == 'Y') {
+                        (*(*env)->user_table)[(*env)->size].time = 1;
+                    } else {
+                        (*(*env)->user_table)[(*env)->size].time = 0;
+                    }
+                    (*(*env)->user_table)[(*env)->size].poll = tf;
+                    // Set the value of the hash
+                    (*(*env)->user_table)[(*env)->size].hash = (int)(hash((*(*env)->user_table)[(*env)->size].ID) % (INT_MAX));
+                    // Get pre-set values
+                    temp = lookup((*(*env)->user_table)[(*env)->size].ID);
+                    if (temp.hash == 0) {
+                        printf("ID not found\n");
+                        MEM_((*(*env)->user_table), (*env)->size, struct sensor);
+                    } else {
+                        (*(*env)->user_table)[(*env)->size].PID = temp.PID;
+                        (*(*env)->user_table)[(*env)->size].width = temp.width;
+                        (*env)->size++;
+                        // Sort array
+                        qsort((*(*env)->user_table), (*env)->size, sizeof(struct sensor), &cmp);
+                    }
                 } else {
-                    (*env)->user_table[(*env)->size]->time = 0;
-                }
-                // Set the value of the hash
-                printf("ID: |%s|\n", (*env)->user_table[(*env)->size]->ID);
-                (*env)->user_table[(*env)->size]->hash = (int)(hash((*env)->user_table[(*env)->size]->ID) % (INT_MAX));
-                // Get pre-set values
-                temp = lookup((*env)->user_table[(*env)->size]->ID);
-                print(&temp, 1);
-                if (temp.hash == 0) {
-                    printf("ID not found\n");
-                    MEM_((*(*env)->user_table), (*env)->size, struct sensor);
-                } else {
-                    (*env)->user_table[(*env)->size]->PID = temp.PID;
-                    (*env)->user_table[(*env)->size]->width = temp.width;
-                    (*env)->size++;
-                    // Sort array
-                    qsort((*(*env)->user_table), (*env)->size, sizeof(struct sensor), &cmp);
+                    printf("Sensor already being polled\n");
                 }
             }
             (*env)->update = 0;
@@ -86,17 +90,21 @@ void *input(void *arg)
         } else if (!strcmp(command, "REMOVE")) {
             pthread_spin_lock(&(*env)->lock);
             (*env)->update = 1;
-            temp = table_lookup(user, (*(*env)->user_table), (*env)->size);
-            struct sensor *r = bsearch(&temp, (*(*env)->user_table), (*env)->size, sizeof(struct sensor), &cmp);
-            if (r != NULL) {
-                temp = (*(*env)->user_table)[(*env)->size - 1];
-                (*(*env)->user_table)[(*env)->size-1] = (*r);
-                (*r) = temp;
-                (*env)->size--;
-                MEM_((*(*env)->user_table), (*env)->size, struct sensor);
-                qsort((*(*env)->user_table), (*env)->size, sizeof(struct sensor), &cmp);
+            if ((*env)->size != 1) {
+                temp = table_lookup(user, (*(*env)->user_table), (*env)->size);
+                struct sensor *r = bsearch(&temp, (*(*env)->user_table), (*env)->size, sizeof(struct sensor), &cmp);
+                if (r != NULL) {
+                    temp = (*(*env)->user_table)[(*env)->size - 1];
+                    (*(*env)->user_table)[(*env)->size-1] = (*r);
+                    (*r) = temp;
+                    (*env)->size--;
+                    MEM_((*(*env)->user_table), (*env)->size, struct sensor);
+                    qsort((*(*env)->user_table), (*env)->size, sizeof(struct sensor), &cmp);
+                } else {
+                    printf("ID not found\n");
+                }
             } else {
-                printf("ID not found\n");
+                printf("Must have atleats one sensor.\n");
             }
             (*env)->update = 0;
             pthread_spin_unlock(&(*env)->lock);
