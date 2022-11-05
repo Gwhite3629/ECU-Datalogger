@@ -18,9 +18,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    unsigned long result = hash(argv[1]);
+    int result = (int)(hash(argv[1]) % (__INT_MAX__));
 
-    printf("Hash: %lu\n", result);
+    printf("Hash: %d\n", result);
 
     return 0;
 }

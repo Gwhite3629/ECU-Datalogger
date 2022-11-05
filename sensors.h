@@ -7,7 +7,7 @@
 
 struct sensor {
     char ID[20];
-    unsigned long hash;
+    int hash;
     int PID;
     bool time;
     int width;

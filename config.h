@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static inline unsigned long
 hash(char *name)
@@ -41,7 +42,7 @@ lookup(char *name)
 		0,
 		0
 	};
-	unsigned long key = hash(name);
+	int key = (int)(hash(name) % (INT_MAX));
 	struct sensor table = {"None",key,0,0,0,0};
 	struct sensor *r = bsearch(&table, &SENSORS, TABLESIZE, sizeof(struct sensor), &cmp);
 	return r ? *r : zero;
@@ -58,14 +59,24 @@ table_lookup(char *name, struct sensor *user_table, int size)
 		0,
 		0
 	};
-	unsigned long key = hash(name);
+	int key = (int)(hash(name) % (INT_MAX));
 	struct sensor table = {"None",key,0,0,0,0};
 	struct sensor *r = bsearch(&table, user_table, size, sizeof(struct sensor), &cmp);
 	return r ? *r : zero;
 }
 
+static inline void
+print(struct sensor *user_table, size_t size)
+{
+	for (size_t i = 0; i < size; i++) {
+        printf("Table[%I64d]\n\tID: %s\n\tHash: %d\n\tPID: 0x%02X\n\tTime: %d\n\tWidth: %d\n\tPoll: %f\n\n", \
+        i, user_table[i].ID, user_table[i].hash, user_table[i].PID, user_table[i].time, user_table[i].width, \
+		user_table[i].poll);
+    }
+}
+
 int search(FILE* fd, fpos_t* prof_start, fpos_t* prof_end, const char *locator);
 
-int read_config(struct sensor **user_table, int *size, char *conf_name);
+int read_config(struct sensor **user_table, size_t *size, char *conf_name);
 
 #endif // _CONFIG_H_

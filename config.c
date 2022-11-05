@@ -45,7 +45,7 @@ exit:
 	return ret;
 }
 
-int read_config(struct sensor **user_table, int *size, char *conf_name)
+int read_config(struct sensor **user_table, size_t *size, char *conf_name)
 {
     int ret = SUCCESS;
     FILE *conf = NULL;
@@ -94,13 +94,13 @@ int read_config(struct sensor **user_table, int *size, char *conf_name)
             (*user_table)[i].time = 0;
         }
 
-        (*user_table)[i].hash = hash((*user_table)[i].ID);
+        (*user_table)[i].hash = (int)(hash((*user_table)[i].ID) % (INT_MAX));
         temp = lookup((*user_table)[i].ID);
         (*user_table)[i].PID = temp.PID;
         (*user_table)[i].width = temp.width;
     }
 
-    (*size) = l/5;
+    (*size) = (size_t)l/5;
     
 	qsort(*user_table, *size, sizeof(struct sensor), &cmp);
 exit:
