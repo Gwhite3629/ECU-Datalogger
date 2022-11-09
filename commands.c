@@ -41,8 +41,12 @@ void *input(void *arg)
         if (!strcmp(command, "SHOW")) {
             print((*(*env)->user_table), (*env)->size);
         } else if (!strcmp(command, "ADD")) {
-            pthread_spin_lock(&(*env)->lock);
+            // Inform main thread
             (*env)->update = 1;
+            // Wait for signal from main
+            pthread_cond_wait((*env)->cond, (*env)->cond_lock);
+            // Do update
+            pthread_spin_lock(&(*env)->lock);
             int spaces = 0;
             for (int i = 0; i < (int)strlen(user); i++) {
                 if (user[i] == ' ')
@@ -85,11 +89,16 @@ void *input(void *arg)
                     printf("Sensor already being polled\n");
                 }
             }
-            (*env)->update = 0;
             pthread_spin_unlock(&(*env)->lock);
+            // Send return signal that update has concluded
+            (*env)->update = 0;
         } else if (!strcmp(command, "REMOVE")) {
-            pthread_spin_lock(&(*env)->lock);
+            // Inform main thread
             (*env)->update = 1;
+            // Wait for signal from main thread
+            pthread_cond_wait((*env)->cond, (*env)->cond_lock);
+            // Do update
+            pthread_spin_lock(&(*env)->lock);
             if ((*env)->size != 1) {
                 temp = table_lookup(user, (*(*env)->user_table), (*env)->size);
                 struct sensor *r = bsearch(&temp, (*(*env)->user_table), (*env)->size, sizeof(struct sensor), &cmp);
@@ -106,8 +115,9 @@ void *input(void *arg)
             } else {
                 printf("Must have atleats one sensor.\n");
             }
-            (*env)->update = 0;
             pthread_spin_unlock(&(*env)->lock);
+            // Send return signal
+            (*env)->update = 0;
         } else if (!strcmp(command, "PRINT")) {
             pthread_spin_lock(&(*env)->lock);
             (*env)->print = !(*env)->print;

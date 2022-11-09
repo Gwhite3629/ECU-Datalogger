@@ -2,6 +2,7 @@
 #define _SENSORS_H_
 
 #include <stdbool.h>
+#include <pthread.h>
 
 #define TABLESIZE 25
 

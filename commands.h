@@ -32,6 +32,8 @@ struct environment {
     bool exit;
     pthread_spinlock_t lock;
     size_t size;
+    pthread_cond_t cond;
+    pthread_mutex_t cond_lock;
 };
 
 void *input(void *arg);
