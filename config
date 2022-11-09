@@ -15,21 +15,21 @@ DEFAULT
 {
     <SENSOR_ID>: ENGINESPEED
     <TIME>: Y
-    <POLL>: 10
+    <POLL>: 0.5
 }
 {
     <SENSOR_ID>: VEHICLESPEED
     <TIME>: Y
-    <POLL>: 100
+    <POLL>: 0.2
 }
 {
     <SENSOR_ID>: SUPPORT1
     <TIME>: N
-    <POLL>: 0
+    <POLL>: 0.1
 }
 {
     <SENSOR_ID>: RUNTIME
     <TIME>: N
-    <POLL>: 0
+    <POLL>: 1
 }
 DEFAULT

@@ -42,10 +42,13 @@ void *input(void *arg)
             print((*(*env)->user_table), (*env)->size);
         } else if (!strcmp(command, "ADD")) {
             // Inform main thread
+            printf("\nINPUT:\n\tSENT TO MAIN THREAD\n\n");
             (*env)->update = 1;
             // Wait for signal from main
-            pthread_cond_wait((*env)->cond, (*env)->cond_lock);
+            printf("\nINPUT:\n\tWAITING\n\n");
+            pthread_cond_wait(&((*env)->cond), &((*env)->cond_lock));
             // Do update
+            printf("\nINPUT:\n\tUPDATING\n\n");
             pthread_spin_lock(&(*env)->lock);
             int spaces = 0;
             for (int i = 0; i < (int)strlen(user); i++) {
@@ -91,13 +94,17 @@ void *input(void *arg)
             }
             pthread_spin_unlock(&(*env)->lock);
             // Send return signal that update has concluded
+            printf("\nINPUT:\n\tDONE UPDATING\n\n");
             (*env)->update = 0;
         } else if (!strcmp(command, "REMOVE")) {
             // Inform main thread
+            printf("\nINPUT:\n\tSENT TO MAIN THREAD\n\n");
             (*env)->update = 1;
             // Wait for signal from main thread
-            pthread_cond_wait((*env)->cond, (*env)->cond_lock);
+            printf("\nINPUT:\n\tWAITING\n\n");
+            pthread_cond_wait(&((*env)->cond), &((*env)->cond_lock));
             // Do update
+            printf("\nINPUT:\n\tUPDATING\n\n");
             pthread_spin_lock(&(*env)->lock);
             if ((*env)->size != 1) {
                 temp = table_lookup(user, (*(*env)->user_table), (*env)->size);
@@ -117,6 +124,7 @@ void *input(void *arg)
             }
             pthread_spin_unlock(&(*env)->lock);
             // Send return signal
+            printf("\nINPUT:\n\tDONE UPDATING\n\n");
             (*env)->update = 0;
         } else if (!strcmp(command, "PRINT")) {
             pthread_spin_lock(&(*env)->lock);
