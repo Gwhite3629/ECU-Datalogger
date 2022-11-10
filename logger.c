@@ -1,6 +1,7 @@
 #include "config.h"
 #include "commands.h"
 #include "utils.h"
+#include "can_helper.h"
 
 #include <stdio.h>
 #include <pthread.h>
@@ -23,6 +24,8 @@ pthread_spinlock_t SPI_LOCK;
 
 struct timespec thread_start_time;
 
+struct can_info CAN;
+
 int gcd(int a, int b)
 {
     int temp;
@@ -43,9 +46,12 @@ static void *sens_thread(void *arg)
     struct timespec start;
     struct timespec end;
     unsigned long delay = 0;
+    int nbytes = 0;
     int ret = SUCCESS;
     FILE *file = NULL;
     uint8_t *s_data = NULL;
+    struct can_frame Rframe;
+    struct can_frame Sframe;
     pthread_cleanup_push((void *)fclose, file);
     // Construct header
 
@@ -57,24 +63,37 @@ static void *sens_thread(void *arg)
 
     MEM(s_data, input->sens.width, uint8_t);
 
+    Sframe = construct_frame(input->sens);
+
     while (!input->exit) {
         // Acquire start time
         clock_gettime(CLOCK_REALTIME, &start);
         pthread_spin_lock(&SPI_LOCK);
-        // IOCTL to send
-        printf("\nID: %s, PID: 0x%02X\n\n", input->sens.ID, input->sens.PID);
-        // IOCTL to receive
+        // Send query
+        nbytes = write(CAN.socket, &Sframe, sizeof(Sframe));
+        HANDLE(nbytes != sizeof(Sframe), WRITE_ERR);
+        
+        // Receive response
+        while(1) {
+            nbytes = read(CAN.socket, &Rframe, sizeof(Rframe));
+            if (nbytes > 0) {
+                int i = 0;
+                for (i = 0; i < input->sens.width, i++) {
+                    s_data[i] = Rframe.data[i];
+                }
+                break;
+            }
+        }
+
         pthread_spin_unlock(&SPI_LOCK);
         // Write data to file, use start time which is well aligned
-
-        /*
-        if (input->time) {
+        
+        if (input->sens.time) {
             fwrite(&(start.tv_sec), sizeof(time_t), 1, file);
-            fwrite(s_data, sizeof(uint8_t), input->width, file);
+            fwrite(s_data, sizeof(uint8_t), input->sens.width, file);
         } else {
-            fwrite(s_data, sizeof(uint8_t), input->width, file);
+            fwrite(s_data, sizeof(uint8_t), input->sens.width, file);
         }
-        */
 
         // Acquire end time
         clock_gettime(CLOCK_REALTIME, &end);
@@ -116,6 +135,8 @@ int main(void)
 
     MEM(sens_thr, env->size, pthread_t);
     MEM(thread_data, env->size, struct thr_data);
+
+    CHECK(init_socket(&CAN));
 
     HANDLE_ERR(pthread_create(&thr, NULL, &input, &env), "pthread_create");
 
@@ -235,6 +256,9 @@ int main(void)
     HANDLE_ERR(pthread_join(thr, NULL), "pthread_join");
 
 exit:
+    clean_socket(CAN);
+    SFREE(sens_thr);
+    SFREE(thread_data);
     SFREE(user_table);
     SFREE(env);
     return ret;

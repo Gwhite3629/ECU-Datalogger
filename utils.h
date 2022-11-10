@@ -28,6 +28,16 @@
     * @{
     */
 
+#define READ_ERR -10
+
+#define WRITE_ERR -9
+
+#define BIND_ERR -8
+
+#define IOCTL_ERR -7
+
+#define SOCKET_OPEN -6
+
     /**
      * @brief File open return code
      * Indicates that there was an issue openning a file
