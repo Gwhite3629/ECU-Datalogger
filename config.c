@@ -49,8 +49,8 @@ int read_config(struct sensor **user_table, size_t *size, char *conf_name)
 {
     int ret = SUCCESS;
     FILE *conf = NULL;
-    fpos_t pstart = 0;
-    fpos_t pend = 0;
+    fpos_t pstart;
+    fpos_t pend;
     char **lines = NULL;
     int ltracker = 0;
     int j = 0;
@@ -64,7 +64,7 @@ int read_config(struct sensor **user_table, size_t *size, char *conf_name)
     fsetpos(conf, &pstart);
     MEM(lines, 1, char*);
     MEM(lines[0], 50, char);
-    for (int i = 0; i < (int)(pend - pstart); i++) {
+    for (int i = 0; i < (int)(pend.__pos - pstart.__pos); i++) {
         lines[l][j] = fgetc(conf);
         if (lines[l][j] == '\n') {
             if (j != 0) {

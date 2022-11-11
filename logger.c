@@ -8,6 +8,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdint.h>
+#include <sys/types.h>
+#include <linux/can.h>
+#include <linux/can/raw.h>
 
 struct running_data {
     struct sensor sens;
@@ -52,14 +55,14 @@ static void *sens_thread(void *arg)
     uint8_t *s_data = NULL;
     struct can_frame Rframe;
     struct can_frame Sframe;
-    pthread_cleanup_push((void *)fclose, file);
+    //pthread_cleanup_push((void *)fclose, file);
     // Construct header
 
     // Get delay in microseconds
     delay = (unsigned long)((1.0/((float)input->sens.poll))*1000000.0f);
 
     // Open file, replace with VIN code
-    file = fopen(input->sens.ID, "wb");
+    //file = fopen(input->sens.ID, "wb");
 
     MEM(s_data, input->sens.width, uint8_t);
 
@@ -70,31 +73,31 @@ static void *sens_thread(void *arg)
         clock_gettime(CLOCK_REALTIME, &start);
         pthread_spin_lock(&SPI_LOCK);
         // Send query
-        nbytes = write(CAN.socket, &Sframe, sizeof(Sframe));
-        HANDLE(nbytes != sizeof(Sframe), WRITE_ERR);
-        
+        //nbytes = write(CAN.socket, &Sframe, sizeof(Sframe));
+        //HANDLE(nbytes != sizeof(Sframe), WRITE_ERR);
+        /*
         // Receive response
         while(1) {
             nbytes = read(CAN.socket, &Rframe, sizeof(Rframe));
             if (nbytes > 0) {
                 int i = 0;
-                for (i = 0; i < input->sens.width, i++) {
+                for (i = 0; i < input->sens.width; i++) {
                     s_data[i] = Rframe.data[i];
                 }
                 break;
             }
         }
-
+	*/
         pthread_spin_unlock(&SPI_LOCK);
         // Write data to file, use start time which is well aligned
-        
+        /*
         if (input->sens.time) {
             fwrite(&(start.tv_sec), sizeof(time_t), 1, file);
             fwrite(s_data, sizeof(uint8_t), input->sens.width, file);
         } else {
             fwrite(s_data, sizeof(uint8_t), input->sens.width, file);
         }
-
+	*/
         // Acquire end time
         clock_gettime(CLOCK_REALTIME, &end);
         tdiff = (end.tv_nsec - start.tv_nsec) * 1000; // Get tdiff in microseconds
@@ -103,7 +106,7 @@ static void *sens_thread(void *arg)
     }
 
 exit:
-    pthread_cleanup_pop(1);
+    //pthread_cleanup_pop(1);
     pthread_exit(&ret);
     return NULL;
 }

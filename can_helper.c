@@ -3,6 +3,13 @@
 #include "utils.h"
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <linux/can.h>
+#include <linux/can/raw.h>
 
 struct can_frame construct_frame(struct sensor sens)
 {
@@ -17,6 +24,8 @@ struct can_frame construct_frame(struct sensor sens)
     frame.data[5] = 0;
     frame.data[6] = 0;
     frame.data[7] = 0;
+
+    return frame;
 }
 
 int init_socket(struct can_info *sock)
@@ -31,7 +40,7 @@ int init_socket(struct can_info *sock)
 
     // Specify device
     strcpy(sock->ifr.ifr_name, "can0");
-    ret = ioctl(sock->socket, SIOCGIFINDEX, &ifr);
+    ret = ioctl(sock->socket, SIOCGIFINDEX, &sock->ifr);
     HANDLE(ret < 0, IOCTL_ERR);
 
     // Bind socket to device
@@ -44,7 +53,7 @@ int init_socket(struct can_info *sock)
     struct can_filter rfilter[1];
     rfilter[0].can_id = CAN_ID;
     rfilter[0].can_mask = CAN_SFF_MASK;
-    setsockopt(socket->sock, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
+    setsockopt(sock->socket, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
 
 exit:
     return ret;

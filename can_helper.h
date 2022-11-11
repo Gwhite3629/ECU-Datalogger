@@ -1,6 +1,10 @@
 #ifndef _CAN_HELPER_H_
 #define _CAN_HELPER_H_
 
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <net/if.h>
+
 #include "sensors.h"
 
 struct can_info {

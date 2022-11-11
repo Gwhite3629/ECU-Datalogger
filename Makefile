@@ -1,7 +1,7 @@
 CC=gcc
 LINK=gcc
-TARGET=logger.exe
-TEST=hashtest.exe
+TARGET=logger
+TEST=hashtest
 OBJS=logger.o config.o sensors.o commands.o can_helper.o
 OBJSTEST=hashtest.o
 CFLAGS= -g -Wall -Wextra
@@ -24,6 +24,6 @@ can_helper.o: can_helper.c can_helper.h
 .PHONY : clean
 
 clean:
-	del -f ${TARGET} core*
-	del -f ${TEST} core*
-	del -f *.o core*
+	rm -f ${TARGET} core*
+	rm -f ${TEST} core*
+	rm -f *.o core*
