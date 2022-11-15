@@ -2,6 +2,7 @@
 #include "commands.h"
 #include "utils.h"
 #include "can_helper.h"
+#include "file.h"
 
 #include <stdio.h>
 #include <pthread.h>
@@ -21,6 +22,7 @@ struct running_data {
 struct thr_data {
     bool exit;
     struct sensor sens;
+    FILE *path;
 };
 
 pthread_spinlock_t SPI_LOCK;
@@ -51,18 +53,14 @@ static void *sens_thread(void *arg)
     unsigned long delay = 0;
     int nbytes = 0;
     int ret = SUCCESS;
-    FILE *file = NULL;
     uint8_t *s_data = NULL;
     struct can_frame Rframe;
     struct can_frame Sframe;
-    //pthread_cleanup_push((void *)fclose, file);
+    //pthread_cleanup_push((void *)free, s_data);
     // Construct header
 
     // Get delay in microseconds
     delay = (unsigned long)((1.0/((float)input->sens.poll))*1000000.0f);
-
-    // Open file, replace with VIN code
-    //file = fopen(input->sens.ID, "wb");
 
     MEM(s_data, input->sens.width, uint8_t);
 
@@ -93,9 +91,9 @@ static void *sens_thread(void *arg)
         /*
         if (input->sens.time) {
             fwrite(&(start.tv_sec), sizeof(time_t), 1, file);
-            fwrite(s_data, sizeof(uint8_t), input->sens.width, file);
+            fwrite(s_data, sizeof(uint8_t), input->sens.width, input->path);
         } else {
-            fwrite(s_data, sizeof(uint8_t), input->sens.width, file);
+            fwrite(s_data, sizeof(uint8_t), input->sens.width, input->path);
         }
 	*/
         // Acquire end time
@@ -115,6 +113,7 @@ int main(void)
 {
     int ret = SUCCESS;
     char conf[20] = "DEFAULT";
+    char path[100];
     struct sensor *user_table = NULL;
     struct environment *env = NULL;
     struct thr_data *thread_data = NULL;
@@ -140,6 +139,8 @@ int main(void)
     MEM(thread_data, env->size, struct thr_data);
 
     CHECK(init_socket(&CAN));
+
+    CHECK(find_dir(&path, env));
 
     HANDLE_ERR(pthread_create(&thr, NULL, &input, &env), "pthread_create");
 
@@ -180,6 +181,7 @@ int main(void)
     for (unsigned int i = 0; i < env->size; i++) {
         thread_data[i].exit = 0;
         thread_data[i].sens = (*env->user_table)[i];
+        get_file(&thread_data[i].path, path, thread_data[i].sens.ID, "wb");
         pthread_create(&sens_thr[i], NULL, &sens_thread, &thread_data[i]);
     }
     
@@ -199,6 +201,7 @@ int main(void)
         }
         for (unsigned int i = 0; i < env->size; i++) {
             pthread_join(sens_thr[i], NULL);
+            SCLOSE(thread_data[i].path);
             printf("MAIN:\n\tTHREAD JOINED: %d\n", i);
         }
 
@@ -220,6 +223,7 @@ int main(void)
             for (unsigned int i = 0; i < env->size; i++) {
                 thread_data[i].exit = 0;
                 thread_data[i].sens = (*env->user_table)[i];
+                get_file(&thread_data[i].path, path, thread_data[i].sens.ID, "wb");
                 pthread_create(&sens_thr[i], NULL, &sens_thread, &thread_data[i]);
                 printf("START THREAD: %d\n", i);
             }
